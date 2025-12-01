@@ -4,7 +4,7 @@ pipeline {
           stage('Checkout Github') {
               steps {
                   echo 'Checking out code from GitHub...'
-                  checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github-token', url: 'https://github.com/data-guru0/GitOPS-testing.git']])
+                  checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github-token', url: 'https://github.com/daud1/miniature-couscous']])
               }
           }        
           stage('Build Docker Image') {
