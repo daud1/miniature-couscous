@@ -14,16 +14,20 @@ pipeline {
           }        
           stage('Build Docker Image') {
               steps {
-                  echo 'Building Docker image...'
+                script{
+                    echo 'Building Docker image...'
                   dockerImage = docker.build("${DOCKER_HUB_REPO}:${IMAGE_TAG}")
+                }
               }
           }
           stage('Push Image to DockerHub') {
               steps {
+                script {
                   echo 'Pushing Docker image to DockerHub...'
                   docker.withRegistry('https://registry.hub.docker.com' , "${DOCKER_HUB_CREDENTIALS_ID}") {
                         dockerImage.push("${IMAGE_TAG}")
                     }
+                }
               }
           }
           stage('Update Deployment YAML with New Tag') {
@@ -36,21 +40,21 @@ pipeline {
             }
         }
 
-        stage('Commit Updated YAML') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-                        sh '''
-                        git config user.name "daud1"
-                        git config user.email "david.mwebaza@outlook.com"
-                        git add manifests/deployment.yaml
-                        git commit -m "Update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
-                        git push https://${GIT_USER}:${GIT_PASS}@github.com/daud1/miniature-couscous HEAD:main
-                        '''
+            stage('Commit Updated YAML') {
+                steps {
+                    script {
+                        withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                            sh '''
+                            git config user.name "daud1"
+                            git config user.email "david.mwebaza@outlook.com"
+                            git add manifests/deployment.yaml
+                            git commit -m "Update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
+                            git push https://${GIT_USER}:${GIT_PASS}@github.com/daud1/miniature-couscous HEAD:main
+                            '''
+                        }
                     }
                 }
             }
-        }
           stage('Install Kubectl & ArgoCD CLI') {
               steps {
                 sh '''
