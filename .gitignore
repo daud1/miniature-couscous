@@ -1,0 +1,6 @@
+logs/
+.venv/
+*.pyc
+.env
+LLMOPS_3.egg-info/
+results/
