@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: studybuddy_app
+  name: studybuddy-app
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: studybuddy_app
+      app: studybuddy-app
   template:
     metadata:
       labels:
-        app: studybuddy_app
+        app: studybuddy-app
     spec:
     containers:
-    - name: studybuddy_app
+    - name: studybuddy-app
       image: dataguru97/studybuddy:v17
       ports:
       - containerPort: 8501

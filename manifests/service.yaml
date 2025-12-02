@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: studybuddy_service
+  name: studybuddy-service
 spec:
   selector:
-    app: studybuddy_app
+    app: studybuddy-app
   ports:
     - port: 80
       targetPort: 8501
