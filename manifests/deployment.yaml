@@ -14,7 +14,7 @@ spec:
     spec:
     containers:
     - name: studybuddy-app
-      image: dataguru97/studybuddy:v17
+      image: daud1/learn:v9
       ports:
       - containerPort: 8501
       env:
