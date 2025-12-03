@@ -12,14 +12,14 @@ spec:
       labels:
         app: studybuddy-app
     spec:
-    containers:
-    - name: studybuddy-app
-      image: daud1/learn:v9
-      ports:
-      - containerPort: 8501
-      env:
-      - name: GROQ_API_KEY
-      valueFrom:
-        secretKeyRef:
-          name: groq-api-secret
-          key: GROQ_API_KEY
+      containers:
+      - name: studybuddy-app
+        image: dataguru97/studybuddy:v17
+        ports:
+        - containerPort: 8501
+        env:
+        - name: GROQ_API_KEY
+        valueFrom:
+          secretKeyRef:
+            name: groq-api-secret
+            key: GROQ_API_KEY
