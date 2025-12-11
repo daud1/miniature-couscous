@@ -5,11 +5,11 @@ on:
     branches: [develop]
 
 env:
-  PROJECT_ID: "gen-lang-client-0729539659"
+  PROJECT_ID: "root-augury-478709-g6"
   REGION: "us-central1"
   REPO: "studybuddy-repo"
   REGISTRY: "us-central1-docker.pkg.dev"
-  CLUSTER: "studybuddy"
+  CLUSTER: "studybuddy-cluster"
 
 jobs:
   checkout:
