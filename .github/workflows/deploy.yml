@@ -67,4 +67,4 @@ jobs:
             --project $PROJECT_ID
 
       - name: Apply manifests
-        run: kubectl apply -f k8s-deployment.yaml
+        run: kubectl apply -f k8s-deployment.yml
