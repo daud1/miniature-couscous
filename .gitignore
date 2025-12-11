@@ -2,7 +2,7 @@ logs/
 .venv/
 *.pyc
 .env
-LLMOPS_3.egg-info/
+*.egg-info/
 results/
 kubeconfig
 gcp-key.json
