@@ -5,3 +5,4 @@ logs/
 LLMOPS_3.egg-info/
 results/
 kubeconfig
+gcp-key.json

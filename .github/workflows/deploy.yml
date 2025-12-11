@@ -1,0 +1,70 @@
+name: studybuddy
+
+on:
+  push:
+    branches: [develop]
+
+env:
+  PROJECT_ID: "gen-lang-client-0729539659"
+  REGION: "us-central1"
+  REPO: "studybuddy-repo"
+  REGISTRY: "us-central1-docker.pkg.dev"
+  CLUSTER: "studybuddy"
+
+jobs:
+  checkout:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo 'Checked out code from repo'
+
+  build:
+    runs-on: ubuntu-latest
+    needs: checkout
+    permissions:
+      contents: "read"
+      id-token: "write"
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - run: gcloud auth configure-docker $REGISTRY
+
+      - name: Build & Push
+        run: |
+          docker build -t $REGISTRY/$PROJECT_ID/$REPO/studybuddy-app:latest .
+          docker push $REGISTRY/$PROJECT_ID/$REPO/studybuddy-app:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - run: gcloud auth configure-docker $REGISTRY
+
+      - name: Get cluster credentials
+        run: |
+          gcloud container clusters get-credentials $CLUSTER \
+            --region $REGION \
+            --project $PROJECT_ID
+
+      - name: Apply manifests
+        run: kubectl apply -f k8s-deployment.yaml

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: studybuddy-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: studybuddy-app
+  template:
+    metadata:
+      labels:
+        app: studybuddy-app
+    spec:
+      containers:
+        - name: studybuddy-app
+          image: us-central1-docker.pkg.dev/gen-lang-client-0729539659/studybuddy-repo/studybuddy-app:latest
+          ports:
+            - containerPort: 8501
+          env:
+            - name: GROQ_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: GROQ_API_KEY
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: studybuddy-service
+spec:
+  selector:
+    app: studybuddy-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8501
+  type: LoadBalancer
