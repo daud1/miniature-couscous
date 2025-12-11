@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: studybuddy-app
-          image: us-central1-docker.pkg.dev/gen-lang-client-0729539659/studybuddy-repo/studybuddy-app:latest
+          image: us-central1-docker.pkg.dev/root-augury-478709-g6/studybuddy-repo/studybuddy-app:latest
           ports:
             - containerPort: 8501
           env:
