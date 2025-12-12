@@ -30,8 +30,10 @@ class QuizManager:
 
         try:
             for _ in range(num_questions):
+                previous_questions = self.questions.copy()
+
                 if question_type == "Multiple Choice":
-                    question = generator.generate_mcq(topic, difficulty.lower())
+                    question = generator.generate_mcq(topic, difficulty.lower(), previous_questions)
 
                     self.questions.append(
                         {
@@ -43,7 +45,9 @@ class QuizManager:
                     )
 
                 else:
-                    question = generator.generate_fill_blank(topic, difficulty.lower())
+                    question = generator.generate_fill_blank(
+                        topic, difficulty.lower(), previous_questions
+                    )
 
                     self.questions.append(
                         {

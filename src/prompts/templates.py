@@ -7,6 +7,11 @@ When generating questions, be thoughtful and ensure they are appropriate for the
 mcq_prompt_template = PromptTemplate(
     template=(
         "Generate a {difficulty} multiple-choice question about {topic}.\n\n"
+        "{previous_questions_context}"
+        "IMPORTANT: The question must be UNIQUE and DIFFERENT from any previous questions. "
+        "Cover a different aspect, subtopic, or perspective of {topic}. "
+        "Avoid rephrasing or slight variations of existing questions. "
+        "Aim for variety in question types (definitions, applications, comparisons, cause-effect, etc.).\n\n"
         "Return ONLY a JSON object with these exact fields:\n"
         "- 'question': A clear, specific question\n"
         "- 'options': An array of exactly 4 possible answers\n"
@@ -19,12 +24,17 @@ mcq_prompt_template = PromptTemplate(
         "}}\n\n"
         "Your response:"
     ),
-    input_variables=["topic", "difficulty"],
+    input_variables=["topic", "difficulty", "previous_questions_context"],
 )
 
 fill_blank_prompt_template = PromptTemplate(
     template=(
         "Generate a {difficulty} fill-in-the-blank question about {topic}.\n\n"
+        "{previous_questions_context}"
+        "IMPORTANT: The question must be UNIQUE and DIFFERENT from any previous questions. "
+        "Cover a different aspect, subtopic, or perspective of {topic}. "
+        "Avoid rephrasing or slight variations of existing questions. "
+        "Use different sentence structures and focus on different concepts.\n\n"
         "Return ONLY a JSON object with these exact fields:\n"
         "- 'question': A sentence with '_____' marking where the blank should be\n"
         "- 'answer': The correct word or phrase that belongs in the blank\n\n"
@@ -35,5 +45,5 @@ fill_blank_prompt_template = PromptTemplate(
         "}}\n\n"
         "Your response:"
     ),
-    input_variables=["topic", "difficulty"],
+    input_variables=["topic", "difficulty", "previous_questions_context"],
 )
