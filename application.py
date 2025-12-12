@@ -3,6 +3,7 @@ import os
 import streamlit as st
 from dotenv import load_dotenv
 
+from src.config.settings import settings
 from src.generator.question_generator import QuestionGenerator
 from src.utils.helpers import QuizManager, rerun
 
@@ -24,6 +25,24 @@ def main():
     if "rerun_trigger" not in st.session_state:
         st.session_state.rerun_trigger = False
 
+    available_providers = settings.get_available_providers()
+
+    if not available_providers:
+        st.error(
+            "No API keys configured. Please set at least one provider API key in your environment variables."
+        )
+        st.stop()
+
+    if "provider" not in st.session_state:
+        st.session_state.provider = available_providers[0]
+
+    if "model" not in st.session_state:
+        st.session_state.model = settings.PROVIDER_MODELS[st.session_state.provider][0]
+
+    if st.session_state.provider not in available_providers:
+        st.session_state.provider = available_providers[0]
+        st.session_state.model = settings.PROVIDER_MODELS[st.session_state.provider][0]
+
     st.title("Study Buddy")
 
     st.sidebar.header("Quiz Settings")
@@ -36,6 +55,24 @@ def main():
 
     difficulty = st.sidebar.selectbox("Dificulty Level", ["Easy", "Medium", "Hard"], index=1)
 
+    provider_index = 0
+    if st.session_state.provider in available_providers:
+        provider_index = available_providers.index(st.session_state.provider)
+
+    provider = st.sidebar.selectbox("Select Provider", available_providers, index=provider_index)
+
+    if provider != st.session_state.provider:
+        st.session_state.provider = provider
+        st.session_state.model = settings.PROVIDER_MODELS[provider][0]
+
+    available_models = settings.PROVIDER_MODELS[provider]
+    model_index = 0
+    if st.session_state.model in available_models:
+        model_index = available_models.index(st.session_state.model)
+
+    model = st.sidebar.selectbox("Select Model", available_models, index=model_index)
+    st.session_state.model = model
+
     num_questions = st.sidebar.number_input(
         "Number of Questions", min_value=1, max_value=10, value=5
     )
@@ -43,7 +80,7 @@ def main():
     if st.sidebar.button("Generate Quiz"):
         st.session_state.quiz_submitted = False
 
-        generator = QuestionGenerator()
+        generator = QuestionGenerator(provider=provider, model=model)
         succces = st.session_state.quiz_manager.generate_questions(
             generator, topic, question_type, difficulty, num_questions
         )

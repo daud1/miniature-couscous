@@ -1,26 +1,40 @@
 from langchain_core.output_parsers import PydanticOutputParser
+from langchain_core.prompts import ChatPromptTemplate
 
 from src.common.custom_exception import CustomException
 from src.common.logger import get_logger
 from src.config.settings import settings
-from src.llm.groq_client import get_groq_llm
+from src.llm.llm_factory import get_llm
 from src.models.question_schemas import FillBlankQuestion, MCQQuestion
-from src.prompts.templates import fill_blank_prompt_template, mcq_prompt_template
+from src.prompts.templates import (
+    SYSTEM_PROMPT,
+    fill_blank_prompt_template,
+    mcq_prompt_template,
+)
 
 
 class QuestionGenerator:
-    def __init__(self):
-        self.llm = get_groq_llm()
+    def __init__(self, provider: str = "Groq", model: str = "llama-3.1-8b-instant"):
+        self.llm = get_llm(provider, model)
+        self.provider = provider
+        self.model = model
         self.logger = get_logger(self.__class__.__name__)
 
     def _retry_and_parse(self, prompt, parser, topic, difficulty):
         for attempt in range(settings.MAX_RETRIES):
             try:
                 self.logger.info(
-                    f"Generating question for topic {topic} with difficulty {difficulty}"
+                    f"Generating question for topic {topic} with difficulty {difficulty} using {self.provider}/{self.model}"
                 )
 
-                response = self.llm.invoke(prompt.format(topic=topic, difficulty=difficulty))
+                chat_prompt = ChatPromptTemplate.from_messages(
+                    [
+                        ("system", SYSTEM_PROMPT),
+                        ("user", prompt.format(topic=topic, difficulty=difficulty)),
+                    ]
+                )
+
+                response = self.llm.invoke(chat_prompt.format_messages())
 
                 parsed = parser.parse(response.content)
 

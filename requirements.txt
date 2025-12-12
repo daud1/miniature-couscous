@@ -1,6 +1,8 @@
 langchain
 langchain_core
 langchain-groq
+langchain-openai
+langchain-anthropic
 pandas
 streamlit
 python-dotenv
