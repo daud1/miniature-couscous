@@ -45,6 +45,22 @@ def main():
 
     st.title("Study Buddy")
 
+    if not st.session_state.quiz_generated:
+        st.markdown(
+            """
+            Welcome to Study Buddy! Generate personalized quiz questions to test your knowledge on any topic.
+            
+            **How to use:**
+            1. Select your question type (Multiple Choice or Fill in the Blank)
+            2. Enter a topic you want to study
+            3. Choose difficulty level and AI model
+            4. Click "Generate Quiz" to create your questions
+            5. Answer the questions and submit to see your results
+            
+            Get started by configuring your quiz settings in the sidebar!
+            """
+        )
+
     st.sidebar.header("Quiz Settings")
 
     question_type = st.sidebar.selectbox(
@@ -80,10 +96,13 @@ def main():
     if st.sidebar.button("Generate Quiz"):
         st.session_state.quiz_submitted = False
 
-        generator = QuestionGenerator(provider=provider, model=model)
-        succces = st.session_state.quiz_manager.generate_questions(
-            generator, topic, question_type, difficulty, num_questions
-        )
+        with st.spinner(
+            f"Generating {num_questions} {question_type.lower()} question(s) about {topic}..."
+        ):
+            generator = QuestionGenerator(provider=provider, model=model)
+            succces = st.session_state.quiz_manager.generate_questions(
+                generator, topic, question_type, difficulty, num_questions
+            )
 
         st.session_state.quiz_generated = succces
         rerun()
