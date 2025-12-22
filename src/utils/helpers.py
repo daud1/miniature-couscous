@@ -136,3 +136,57 @@ class QuizManager:
         except Exception as e:
             st.error(f"Failed to save results {e}")
             return None
+
+    def generate_questions_answers_document(self):
+        if not self.questions:
+            return None, None
+
+        from datetime import datetime
+        from io import StringIO
+
+        content = StringIO()
+
+        # Write Questions Section
+        content.write("=" * 80 + "\n")
+        content.write("QUESTIONS\n")
+        content.write("=" * 80 + "\n\n")
+
+        for i, q in enumerate(self.questions, 1):
+            content.write(f"Question {i}: {q['question']}\n")
+
+            if q["type"] == "MCQ":
+                content.write("Type: Multiple Choice\n")
+                for idx, option in enumerate(q["options"], 1):
+                    content.write(f"  {chr(64 + idx)}. {option}\n")
+            else:
+                content.write("Type: Fill in the Blank\n")
+
+            content.write("\n")
+
+        # Page break - multiple newlines to simulate page break
+        content.write("\n" * 10)
+        content.write("=" * 80 + "\n")
+        content.write("ANSWERS\n")
+        content.write("=" * 80 + "\n\n")
+
+        # Write Answers Section
+        for i, q in enumerate(self.questions, 1):
+            content.write(f"Question {i}: {q['question']}\n")
+            content.write(f"Correct Answer: {q['correct_answer']}\n")
+
+            if q["type"] == "MCQ":
+                content.write("Type: Multiple Choice\n")
+                # Show all options with correct one marked
+                for idx, option in enumerate(q["options"], 1):
+                    marker = " ✓" if option == q["correct_answer"] else ""
+                    content.write(f"  {chr(64 + idx)}. {option}{marker}\n")
+            else:
+                content.write("Type: Fill in the Blank\n")
+
+            content.write("\n")
+
+        document_content = content.getvalue()
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"quiz_questions_answers_{timestamp}.txt"
+
+        return document_content.encode("utf-8"), filename

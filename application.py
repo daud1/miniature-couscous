@@ -109,6 +109,17 @@ def main():
 
     if st.session_state.quiz_generated and st.session_state.quiz_manager.questions:
         st.header("Quiz")
+        
+        # Download button for questions and answers - only visible when questions exist
+        doc_content, filename = st.session_state.quiz_manager.generate_questions_answers_document()
+        if doc_content and filename:
+            st.download_button(
+                label="📥 Download Questions & Answers",
+                data=doc_content,
+                file_name=filename,
+                mime="text/plain",
+            )
+        
         st.session_state.quiz_manager.attempt_quiz()
 
         if st.button("Submit Quiz"):
