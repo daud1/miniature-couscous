@@ -2,7 +2,7 @@ name: studybuddy
 
 on:
   push:
-    branches: [develop]
+    branches: [develop, main]
 
 env:
   PROJECT_ID: "root-augury-478709-g6"
